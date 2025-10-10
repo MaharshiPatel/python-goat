@@ -52,6 +52,11 @@ build-job:
     - pip install --upgrade pip setuptools wheel
     - jf pip-config --repo-resolve=alpha-pypi-virtual
     - jf pip install -r requirements.txt  --module=pygoat
+
+    #### Build Python package
+    - python3 setup.py sdist bdist_wheel
+   
+    #### Upload to Artifactory
     - jf rt upload "dist/*" "alpha-pypi-virtual/"
     - jf rt build-add-git ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER} ./  
     - jf rt build-collect-env ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER}  
