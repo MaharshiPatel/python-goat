@@ -60,7 +60,6 @@ build-job:
     - jf rt upload "dist/*" "alpha-pypi-virtual/"
     - jf rt build-add-git ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER} ./  
     - jf rt build-collect-env ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER}  
-    - jf npm publish --build-name ${JFROG_CLI_BUILD_NAME} --build-number ${JFROG_CLI_BUILD_NUMBER} --module npm-build  
     #### JFrog Build Publish
     - jf rt build-publish ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER}  
     #### JFrog Build Scan
