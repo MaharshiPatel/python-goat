@@ -34,7 +34,7 @@ build-job:
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
   script:
-    - apk add --update jq curl python
+    - apk add --update jq curl 
 
     #### Install JFrog CLI
     - echo "Installing JFrog CLI"
