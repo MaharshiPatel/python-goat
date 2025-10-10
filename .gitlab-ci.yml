@@ -6,11 +6,6 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
 
-default:
-  id_tokens:
-    GITLAB_OIDC_TOKEN:
-      aud: https://gitlab.com
-
 stages:
   - pypi_docker_build
 
