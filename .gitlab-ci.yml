@@ -47,6 +47,9 @@ build-job:
     - jf c show
     - echo "$JFROG_ID_TOKEN" | head -c 20
     - jf rt ping 
+    - python3 -m venv venv
+    - source venv/bin/activate
+    - pip install --upgrade pip
     - jf pip-config --repo-resolve=alpha-pypi-virtual
     - jf pip install -r requirements.txt  --module=pygoat
     - jf rt upload "dist/*" "alpha-pypi-virtual/"
