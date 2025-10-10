@@ -1,0 +1,68 @@
+workflow:
+  name: "gitlab-python-goat"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+
+default:
+  id_tokens:
+    GITLAB_OIDC_TOKEN:
+      aud: https://gitlab.com
+
+stages:
+  - pypi_docker_build
+
+include:
+  - remote: "https://releases.jfrog.io/artifactory/jfrog-cli/gitlab/v2/.setup-jfrog-unix.yml"
+
+variables:
+  JF_URL: "soleng.jfrog.io"
+  JF_USERNAME: "maharship"
+  # JFROG_CLI_LOG_LEVEL: "DEBUG"
+  PYPI_JF_RT_REPO: "alpha-pypi-virtual"
+  DOCKER_JF_RT_REPO: "alpha-docker-virtual"
+
+build-job:
+  image: docker:28.0.1
+  stage: pypi_docker_build
+  services:
+    - docker:28.0.1-dind
+  before_script:
+    - docker info
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  script:
+    - apk add --update jq curl python
+
+    #### Install JFrog CLI
+    - echo "Installing JFrog CLI"
+
+    #### Install JFrog CLI
+    - echo "Installing JFrog CLI"
+    - !reference [.setup_jfrog, script]
+    - export JFROG_CLI_BUILD_NAME="${CI_PIPELINE_NAME}"
+    - export JFROG_CLI_BUILD_NUMBER="${CI_PIPELINE_ID}"
+    - echo ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER}
+    - jf --version
+    #### JFrog CLI Confguration
+    - jf c add soleng${CI_JOB_ID} --url https://soleng.jfrog.io --access-token ${JF_ACCESS_TOKEN} --interactive=false --overwrite=true 
+    - jf c use soleng${CI_JOB_ID}
+    - jf c show
+    - echo "$JFROG_ID_TOKEN" | head -c 20
+    - jf rt ping 
+    - source $VENV_PATH/bin/activate
+    - jf pip-config --repo-resolve=alpha-pypi-virtual
+    - jf pip install -r requirements.txt  --module=pygoat
+    - jf rt upload "dist/*" "alpha-pypi-virtual/"
+    - jf rt build-add-git ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER} ./  
+    - jf rt build-collect-env ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER}  
+    - jf npm publish --build-name ${JFROG_CLI_BUILD_NAME} --build-number ${JFROG_CLI_BUILD_NUMBER} --module npm-build  
+    #### JFrog Build Publish
+    - jf rt build-publish ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER}  
+    #### JFrog Build Scan
+    - sleep 60
+    - jf bs ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER} --vuln=true   --format json
+
+
