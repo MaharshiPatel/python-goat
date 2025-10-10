@@ -20,7 +20,7 @@ variables:
   DOCKER_JF_RT_REPO: "alpha-docker-virtual"
 
 build-job:
-  image: docker:28.0.1
+  image: python:3.12
   stage: pypi_docker_build
   services:
     - docker:28.0.1-dind
@@ -29,7 +29,7 @@ build-job:
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
   script:
-    - apk add --update jq curl 
+    - apk add --update jq curl --no-cache python3 py3-pip
 
     #### Install JFrog CLI
     - echo "Installing JFrog CLI"
