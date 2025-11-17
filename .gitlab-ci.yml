@@ -22,6 +22,9 @@ variables:
 build-job:
   image: docker:28.0.1
   stage: pypi_docker_build
+  id_tokens:
+    JFROG_CLI_OIDC_EXCHANGE_TOKEN_ID:
+      aud: gitlab-oidc-read
   services:
     - docker:28.0.1-dind
   before_script:
