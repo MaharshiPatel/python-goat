@@ -45,9 +45,8 @@ build-job:
     - echo ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER}
     - jf --version
     #### JFrog CLI Confguration
-    # - jf c add soleng${CI_JOB_ID} --url https://soleng.jfrog.io --access-token ${JF_ACCESS_TOKEN} --interactive=false --overwrite=true 
-    - echo "$CI_JOB_JWT" | jq -R 'split(".") | .[1] | @base64d | fromjson'
-    - jf c add soleng${CI_JOB_ID} --url=https://soleng.jfrog.io --oidc-provider-name=mpatel-gitlab-oidc --interactive=false
+    - jf c add soleng${CI_JOB_ID} --url https://soleng.jfrog.io --access-token ${JF_ACCESS_TOKEN} --interactive=false --overwrite=true 
+    # - jf c add soleng${CI_JOB_ID} --url=https://soleng.jfrog.io --oidc-provider-name=mpatel-gitlab-oidc --interactive=false
     - jf c use soleng${CI_JOB_ID}
     - jf c show
     - echo "$JFROG_ID_TOKEN" | head -c 20
