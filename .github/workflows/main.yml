@@ -51,6 +51,9 @@ jobs:
           jf ca --format=table --threads=100
 
       - name: Run Python build and publish
+        env:
+          # Unique version every run: base from setup.py default, add .dev and run number
+          PACKAGE_VERSION: ${{ github.run_number && format('1.2.0.dev{0}', github.run_number) || '1.2.0' }}
         run: |
           python3 -m pip install --upgrade pip setuptools wheel sigstore
           wheel -h
