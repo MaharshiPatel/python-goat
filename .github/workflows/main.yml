@@ -35,7 +35,7 @@ jobs:
       #   run: jf c add $SERVER_ID --url=$JF_URL --access-token=$JF_ACCESS_TOKEN --interactive=false
 
       - name: Ping JFrog CLI
-        run: jf rt ping --server-id=$SERVER_ID
+        run: jf rt ping
 
       - name: Configure JFrog environment with PyPI repository
         run: |
