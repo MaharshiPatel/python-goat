@@ -9,12 +9,9 @@
 
 name: Hadolint
 
+# Disabled: no longer runs on push/PR. Run manually from Actions tab if needed.
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ master ]
+  workflow_dispatch:
 
 
 permissions:

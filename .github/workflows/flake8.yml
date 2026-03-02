@@ -3,11 +3,9 @@
 
 name: Flake8
 
+# Disabled: no longer runs on push/PR. Run manually from Actions tab if needed.
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+  workflow_dispatch:
 
 jobs:
   build:
