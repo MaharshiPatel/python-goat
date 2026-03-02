@@ -31,8 +31,8 @@ jobs:
           JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
           JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
 
-      - name: JFrog CLI config (server ${{ env.SERVER_ID }})
-        run: jf c add $SERVER_ID --url=$JF_URL --access-token=$JF_ACCESS_TOKEN --interactive=false
+      # - name: JFrog CLI config (server ${{ env.SERVER_ID }})
+      #   run: jf c add $SERVER_ID --url=$JF_URL --access-token=$JF_ACCESS_TOKEN --interactive=false
 
       - name: Ping JFrog CLI
         run: jf rt ping --server-id=$SERVER_ID
