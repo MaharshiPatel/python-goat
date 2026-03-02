@@ -9,7 +9,9 @@ permissions:
   security-events: write # Required for uploading code scanning.
 
 env:
-  JF_URL: ${{ secrets.JF_URL }}
+  # JFrog Artifactory URL (required). Set in repo: Settings → Secrets and variables → Actions.
+  # Use secret JF_URL or variable JF_URL — ensure one is set.
+  JF_URL: ${{ secrets.JF_URL || vars.JF_URL }}
   MODULE_NAME: "pygoat"
   SERVER_ID: "rtsaas"
   REPO: "auth-python-virtual"
@@ -17,6 +19,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      JF_URL: ${{ secrets.JF_URL || vars.JF_URL }}
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
@@ -25,12 +29,12 @@ jobs:
         uses: jfrog/setup-jfrog-cli@v4
         id: setup-cli
         env:
-         JF_URL: ${{ vars.JF_URL }}
+          JF_URL: ${{ secrets.JF_URL || vars.JF_URL }}
         with:
-         oidc-provider-name: mpatel-jfrog-githuboidc
+          oidc-provider-name: mpatel-jfrog-githuboidc
 
       - name: Ping JFrog CLI
-        run: jf rt ping
+        run: jf rt ping --server-id=$SERVER_ID
 
       - name: Configure JFrog environment with PyPI repository
         run: |
