@@ -1,22 +1,25 @@
 name: mpatel-catalog-ci-job
 on: push
 
+permissions:
+  actions: read # for detecting the Github Actions environment.
+  id-token: write # for creating OIDC tokens for signing.
+  packages: write # for uploading attestations.
+  contents: read
+  security-events: write # Required for uploading code scanning.
+
+env:
+  JF_URL: ${{ secrets.JF_URL }}
+  MODULE_NAME: "pygoat"
+  SERVER_ID: "rtsaas"
+  REPO: "auth-python-virtual"
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      JF_URL: ${{ secrets.JF_URL }}
-      JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
-      MODULE_NAME: "pygoat"
-      SERVER_ID: "rtsaas"
-      REPO: "auth-python-virtual"
-
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
-
-      - name: Setup JFrog CLI
-        uses: jfrog/setup-jfrog-cli@v4
 
       - name: Setup JFrog CLI
         uses: jfrog/setup-jfrog-cli@v4
