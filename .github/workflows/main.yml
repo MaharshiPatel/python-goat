@@ -1,0 +1,63 @@
+name: mpatel-catalog-ci-job
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      JF_URL: ${{ secrets.JF_URL }}
+      JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+      MODULE_NAME: "pygoat"
+      SERVER_ID: "rtsaas"
+      REPO: "auth-python-virtual"
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - name: Setup JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v4
+
+      - name: Setup JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v4
+        id: setup-cli
+        env:
+         JF_URL: ${{ vars.JF_URL }}
+        with:
+         oidc-provider-name: mpatel-jfrog-githuboidc
+
+      - name: Ping JFrog CLI
+        run: jf rt ping
+
+      - name: Configure JFrog environment with PyPI repository
+        run: |
+          jf pipc --server-id-resolve=$SERVER_ID --repo-resolve=$REPO
+
+      - name: "Curation: audit"
+        run: |
+          jf ca --format=table --threads=100
+
+      - name: Run Python build and publish
+        run: |
+          python3 -m pip install --upgrade pip setuptools wheel sigstore
+          wheel -h
+          pip show setuptools
+          echo $VIRTUAL_ENV
+
+          # Build the python project
+          jf pip install -r requirements.txt --module=$MODULE_NAME
+
+          # Package the project, create distribution archives (tar.gz and whl)
+          python3 setup.py sdist bdist_wheel
+
+          jf rt u dist/ $REPO/pypi/ --module=$MODULE_NAME
+
+      - name: Publish Build-info to RT
+        run: |
+          jf rt bce
+          jf rt bag
+          jf rt bp
+
+      - name: Build Scan
+        run: |
+          jf bs --fail=false --vuln
