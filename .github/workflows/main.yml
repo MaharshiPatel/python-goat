@@ -2,16 +2,13 @@ name: mpatel-catalog-ci-job
 on: push
 
 permissions:
-  actions: read # for detecting the Github Actions environment.
-  id-token: write # for creating OIDC tokens for signing.
-  packages: write # for uploading attestations.
   contents: read
-  security-events: write # Required for uploading code scanning.
 
 env:
-  # JFrog Artifactory URL (required). Set in repo: Settings → Secrets and variables → Actions.
-  # Use secret JF_URL or variable JF_URL — ensure one is set.
+  # Token-based auth (no OIDC). Set in repo: Settings → Secrets and variables → Actions.
   JF_URL: ${{ secrets.JF_URL || vars.JF_URL }}
+  JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+  JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
   MODULE_NAME: "pygoat"
   SERVER_ID: "rtsaas"
   REPO: "auth-python-virtual"
@@ -21,17 +18,21 @@ jobs:
     runs-on: ubuntu-latest
     env:
       JF_URL: ${{ secrets.JF_URL || vars.JF_URL }}
+      JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+      JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
 
       - name: Setup JFrog CLI
         uses: jfrog/setup-jfrog-cli@v4
-        id: setup-cli
         env:
           JF_URL: ${{ secrets.JF_URL || vars.JF_URL }}
-        with:
-          oidc-provider-name: mpatel-jfrog-githuboidc
+          JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+          JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
+
+      - name: JFrog CLI config (server ${{ env.SERVER_ID }})
+        run: jf c add $SERVER_ID --url=$JF_URL --access-token=$JF_ACCESS_TOKEN --interactive=false
 
       - name: Ping JFrog CLI
         run: jf rt ping --server-id=$SERVER_ID
