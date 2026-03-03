@@ -97,7 +97,8 @@ def api_data_view(request):
             ssn='123456789',  # demo SSN
             api_key=generate_api_key()  # simple api key
         )
-    
+
+    // jfrog-ignore
     data = {
         'username': request.user.username,
         'credit_card': user_data.credit_card,
@@ -117,6 +118,7 @@ def all_users_data_view(request):
     # Note for students: Notice how there are no checks for who's requesting the data!
 
     all_users_data = []
+    // jfrog-ignore
     for user_data in UserData.objects.all():
         all_users_data.append({
             'username': user_data.user.username,
